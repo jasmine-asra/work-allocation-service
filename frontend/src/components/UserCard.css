@@ -1,0 +1,141 @@
+.user-card {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0 0 0 1rem;
+    display: flex;
+    flex-direction: column; 
+    position: relative;
+    transition: all 0.3s ease;
+    min-height: 9rem;
+}
+
+.user-card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.user-card-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0
+}
+
+.user-card-preferred {
+    font-size: 0.875rem;
+    color: grey;
+    margin-top: 0.5rem;
+}
+
+.user-card-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.user-card-toggle svg {
+    transition: transform 0.3s ease;
+}
+
+.user-card-toggle svg.rotated {
+    transform: rotate(180deg);
+}
+
+.user-card-content {
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 1rem;
+    transition: max-height 0.3s ease;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+}
+
+.user-card-content.expanded {
+    max-height: 700px;
+    opacity: 1;
+}
+
+.doable-list {
+    list-style-type: none;
+    padding: 0.5rem;
+    margin: 0;
+}
+
+.doable-item-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.doable-item {
+    margin-bottom: 0.75rem;
+}
+
+.doable-title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.doable-case-id {
+    font-size: 0.875rem;
+    color: grey;
+}
+
+
+.user-card-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: auto;
+}
+
+.doable-button {
+    background-color: #6619ff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.case-button {
+    background-color: white;
+    padding: 0.5rem 1rem;
+    outline: 1px solid black;
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.related-doables-button {
+    background-color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    border-radius: 15px;
+    cursor: pointer;
+    align-self: flex-start;
+    margin-top: 0.5rem;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.related-doables-button:hover {
+    background-color: rgb(186, 186, 186);
+}
+
+.user-card-button:hover {
+    background-color: #0056b3;
+}
