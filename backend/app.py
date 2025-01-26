@@ -126,5 +126,44 @@ def delete_case_allocations(case_id):
     return jsonify({"message": "Case allocations deleted."})
 
 
+@app.route('/api/doables', methods=['POST'])
+def add_doable():
+    """
+    Add a new doable.
+    """
+    data = request.get_json()
+
+    data["id"] = doable_manager.generate_id(data.get("doableTitle"), data.get("doableType"), data.get("caseId"))
+    data["created_at"] = datetime.now().isoformat()
+
+    try:
+        new_doable = Doable.from_dict({
+            "id": data["id"],
+            "title": data["doableTitle"],
+            "case_id": data.get("caseId"),
+            "type": data["doableType"],
+            "created_at": data["created_at"],
+        })
+        doable_manager.add_doable_instance(new_doable)
+        doable_manager.save_doables()
+        return jsonify({"message": "Doable added."})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route('/api/doables/<doable_id>', methods=['PATCH'])
+def update_doable(doable_id):
+    """
+    Update a doable.
+    """
+    data = request.get_json()
+    
+    status = data.get("status")
+    doable_manager.update_doable(doable_id, status=status)
+    doable_manager.save_doables()
+    
+    return jsonify({"message": "Doable updated."})
+
+
 if __name__ == "__main__":
     app.run(debug=True)
