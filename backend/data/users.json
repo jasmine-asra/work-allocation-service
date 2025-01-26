@@ -1,0 +1,20 @@
+[
+  {
+    "id": "e3b0c442-98fc-1c14-9afc-c1d3c44b5150",
+    "user_name": "emma.emails",
+    "first_name": "Emma",
+  	"preferred_doable_type": "email"
+  },
+  {
+    "id": "d3b4f3a4-91db-41c9-99cd-3d914ea347be",
+    "user_name": "terry.tasks",
+    "first_name": "Terry",
+  	"preferred_doable_type": "task"
+  },
+  {
+    "id": "dbef5ab8-9e5e-47fb-b017-d9be67c9a22a",
+    "user_name": "bobby.undecided",
+    "first_name": "Bobby",
+  	"preferred_doable_type": null
+  }
+]

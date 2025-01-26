@@ -1,0 +1,122 @@
+[
+    {
+        "id": "case_setup_1",
+        "title": "set up the case",
+        "case_id": "case_1",
+        "type": "task",
+        "status": "pending",
+        "created_at": "2021-11-01T15:00:00"
+    },
+    {
+        "id": "message_456",
+        "title": "re: send us your details",
+        "case_id": "case_1",
+        "type": "email",
+        "status": "pending",
+        "created_at": "2021-11-02T15:00:00"
+    },
+    {
+        "id": "exchange_2",
+        "title": "exchange",
+        "case_id": "case_2",
+        "type": "task",
+        "status": "pending",
+        "created_at": "2021-11-01T10:00:00"
+    },
+    {
+        "id": "complete_2",
+        "title": "complete",
+        "case_id": "case_2",
+        "type": "task",
+        "status": "pending",
+        "created_at": "2021-11-01T11:00:00"
+    },
+    {
+        "id": "message_457",
+        "title": "are we completing today?",
+        "case_id": "case_setup_2",
+        "type": "email",
+        "status": "pending",
+        "created_at": "2021-11-02T10:00:00"
+    },
+    {
+        "id": "case_setup_3",
+        "title": "set up the case",
+        "case_id": "case_3",
+        "type": "task",
+        "status": "pending",
+        "created_at": "2021-11-15T16:24:00"
+    },
+    {
+        "id": "message_458",
+        "title": "I'm interested in hiring a lawyer",
+        "case_id": null,
+        "type": "email",
+        "status": "pending",
+        "created_at": "2021-11-04T15:00:00"
+    },
+    {
+        "id": "message_459",
+        "title": "whats the status of my case",
+        "case_id": "case_4",
+        "type": "email",
+        "status": "pending",
+        "created_at": "2021-11-10T19:00:00"
+    },
+    {
+        "id": "case_setup_5",
+        "title": "set up the case",
+        "case_id": "case_5",
+        "type": "task",
+        "status": "pending",
+        "created_at": "2021-10-29T07:00:00"
+    },
+    {
+        "id": "case_setup_6",
+        "title": "set up the case",
+        "case_id": "case_6",
+        "type": "task",
+        "status": "pending",
+        "created_at": "2021-10-29T07:00:00"
+    },
+    {
+        "id": "message_460",
+        "title": "please find mortgage offer attached",
+        "case_id": "case_7",
+        "type": "email",
+        "status": "pending",
+        "created_at": "2021-11-05T07:00:00"
+    },
+    {
+        "id": "message_461",
+        "title": "did you get my previous message?",
+        "case_id": "case_7",
+        "type": "email",
+        "status": "pending",
+        "created_at": "2021-11-05T09:00:00"
+    },
+    {
+        "id": "message_462",
+        "title": "Who will i pick the key up from?",
+        "case_id": "case_8",
+        "type": "email",
+        "status": "pending",
+        "created_at": "2021-11-07T13:00:42"
+    },
+    {
+        "id": "exchange_8",
+        "title": "exchange",
+        "case_id": "case_8",
+        "type": "task",
+        "status": "pending",
+        "created_at": "2021-11-02T16:48:42"
+    },
+    {
+        "id": "complete_8",
+        "title": "complete",
+        "case_id": "case_8",
+        "type": "task",
+        "status": "pending",
+        "created_at": "2021-11-02T16:48:42"
+    }
+]
