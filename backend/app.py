@@ -94,5 +94,37 @@ def allocate_case_to_user_by_id(user_id, case_id):
     return jsonify(convert_dict_keys_to_camel_case([doable.to_dict() for doable in allocated_doables]))
 
 
+@app.route('/api/allocations')
+def get_allocations():
+    """
+    Get all allocations.
+    """
+    allocations = allocation_manager.get_allocation_view()
+
+    return jsonify(convert_dict_keys_to_camel_case(allocations))
+
+
+@app.route('/api/allocations/<doable_id>', methods=['DELETE'])
+def delete_allocation(doable_id):
+    """
+    Delete an allocation.
+    """
+    allocation_manager.delete_allocation(doable_id)
+    data_manager.save_all()
+
+    return jsonify({"message": "Allocation deleted."})
+
+
+@app.route('/api/allocations/case/<case_id>', methods=['DELETE'])
+def delete_case_allocations(case_id):
+    """
+    Delete all allocations for a case.
+    """
+    allocation_manager.delete_case_allocations(case_id)
+    data_manager.save_all()
+
+    return jsonify({"message": "Case allocations deleted."})
+
+
 if __name__ == "__main__":
     app.run(debug=True)
