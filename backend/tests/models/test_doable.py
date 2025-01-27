@@ -12,6 +12,7 @@ def test_doable_from_dict_valid():
         "title": "Test Task",
         "case_id": "12345",
         "type": "task",
+        "priority": "high",
         "status": "pending",
         "created_at": datetime.now().isoformat(),
     }
@@ -22,6 +23,7 @@ def test_doable_from_dict_valid():
     assert doable.title == data["title"]
     assert doable.case_id == data["case_id"]
     assert doable.type == data["type"]
+    assert doable.priority == data["priority"]
     assert doable.status == data["status"]
     assert isinstance(doable.created_at, datetime)
 
@@ -33,11 +35,29 @@ def test_doable_invalid_type():
         "id": str(uuid4()),
         "title": "Test Task",
         "type": "invalid_type",
+        "priority": "high",
         "status": "pending",
         "created_at": datetime.now().isoformat(),
     }
 
     with pytest.raises(ValueError, match="Invalid type. Must be 'task' or 'email'."):
+        Doable.from_dict(data)
+
+def test_doable_invalid_priority():
+    """
+    Test that providing an invalid 'priority' (not 'low', 'medium', or 'high') raises a ValueError.
+    """
+    valid_priorities = {"low", "medium", "high"}
+    data = {
+        "id": str(uuid4()),
+        "title": "Test Task",
+        "type": "task",
+        "priority": "invalid_priority",
+        "status": "pending",
+        "created_at": datetime.now().isoformat(),
+    }
+
+    with pytest.raises(ValueError, match=f"Invalid priority 'invalid_priority'. Must be one of {valid_priorities}."):
         Doable.from_dict(data)
 
 def test_doable_invalid_status():
@@ -49,12 +69,29 @@ def test_doable_invalid_status():
         "id": str(uuid4()),
         "title": "Test Task",
         "type": "task",
+        "priority": "high",
         "status": "invalid_status",
         "created_at": datetime.now().isoformat(),
     }
 
     with pytest.raises(ValueError, match=f"Invalid status 'invalid_status'. Must be one of {valid_statuses}."):
         Doable.from_dict(data)
+
+def test_doable_missing_priority():
+    """
+    Test that if the 'priority' field is missing, it defaults to 'medium'.
+    """
+    data = {
+        "id": str(uuid4()),
+        "title": "Test Task",
+        "type": "task",
+        "status": "pending",
+        "created_at": datetime.now().isoformat(),
+    }
+
+    doable = Doable.from_dict(data)
+
+    assert doable.priority == "medium"
 
 def test_doable_missing_status():
     """
@@ -64,6 +101,7 @@ def test_doable_missing_status():
         "id": str(uuid4()),
         "title": "Test Task",
         "type": "task",
+        "priority": "high",
         "created_at": datetime.now().isoformat(),
     }
 
@@ -78,6 +116,7 @@ def test_doable_missing_type():
     data = {
         "id": str(uuid4()),
         "title": "Test Task",
+        "priority": "high",
         "status": "pending",
         "created_at": datetime.now().isoformat(),
     }
@@ -94,6 +133,7 @@ def test_doable_missing_case_id():
         "id": str(uuid4()),
         "title": "Test Task",
         "type": "task",
+        "priority": "high",
         "status": "pending",
         "created_at": datetime.now().isoformat(),
     }
@@ -110,6 +150,7 @@ def test_doable_created_at_string_conversion():
         "id": str(uuid4()),
         "title": "Test Task",
         "type": "task",
+        "priority": "high",
         "status": "pending",
         "created_at": "2025-01-26T12:00:00",
     }
@@ -127,6 +168,7 @@ def test_doable_to_dict():
         "id": str(uuid4()),
         "title": "Test Task",
         "type": "task",
+        "priority": "high",
         "status": "pending",
         "created_at": datetime.now().isoformat(),
     }
@@ -137,6 +179,7 @@ def test_doable_to_dict():
     assert doable_dict["id"] == data["id"]
     assert doable_dict["title"] == data["title"]
     assert doable_dict["type"] == data["type"]
+    assert doable_dict["priority"] == data["priority"]
     assert doable_dict["status"] == data["status"]
     assert doable_dict["created_at"] == doable.created_at.isoformat()
     assert doable_dict["case_id"] is None
@@ -148,6 +191,7 @@ def test_doable_from_dict_missing_id():
     data = {
         "title": "Test Task",
         "type": "task",
+        "priority": "high",
         "status": "pending",
         "created_at": datetime.now().isoformat(),
     }

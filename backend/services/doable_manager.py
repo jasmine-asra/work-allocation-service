@@ -1,7 +1,6 @@
 from typing import Dict, List, Optional
 import json
 from models.doable import Doable
-from utils import sort_object_list_by_key
 
 class DoableManager:
     def __init__(self, file_path: str):
@@ -22,13 +21,32 @@ class DoableManager:
                     doable = Doable.from_dict(doable_data)
                     self.doables[doable.id] = doable
                     
-                    # Update counters based on existing IDs
+                    # Update counter based on existing IDs
                     if doable.id.startswith("message_"):
                         number = int(doable.id.split("_")[1])
                         self.message_counter = max(self.message_counter, number)
 
         except FileNotFoundError:
             print("File not found. Starting with an empty doables list.")  
+
+
+    def _sort_doables_by_priority_and_age(self, doables: List[Doable]) -> List[Doable]:
+        """
+        Sort a list of Doables by:
+        1. Status ("pending" first, "completed" last),
+        2. Priority (high -> medium -> low),
+        3. Age (oldest first).
+        """
+        priority_order = {"high": 0, "medium": 1, "low": 2}
+
+        return sorted(
+            doables,
+            key=lambda x: (
+                0 if x.status == "pending" else 1,
+                priority_order.get(x.priority, float("inf")),
+                x.created_at,
+            ),
+        )
 
 
     def generate_id(self, title: str, type: str, case_id: Optional[str]=None) -> str:
@@ -69,41 +87,51 @@ class DoableManager:
         Retrieve a Doable by its ID.
         """
         return self.doables.get(doable_id)
-
+    
 
     def get_oldest_doable_by_type(self, type: Optional[str] = None) -> Optional[Doable]:
         """
-        Retrieve the oldest Doable by type.
-        If no type is specified, returns the oldest Doable regardless of type.
+        Retrieve the oldest Doable by type and priority.
+        Prioritises high priority items first, then medium, then low.
+        If no type is specified, returns the oldest highest-priority Doable regardless of type.
         """
-        sorted_doables = sort_object_list_by_key(self.doables.values(), "created_at")
-        for doable in sorted_doables: # get first matching doable as it is the oldest
-            if type is None or doable.type == type:
-                return doable
+        filtered_doables = [
+            doable for doable in self.doables.values()
+            if (type is None or doable.type == type) and doable.status == "pending"
+        ]
         
-        return None  
+        if not filtered_doables:
+            return None
+        
+        sorted_doables = self._sort_doables_by_priority_and_age(filtered_doables)
+
+        return sorted_doables[0] if sorted_doables else None
 
 
     def get_doables_by_case(self, case_id: str) -> List[Doable]:
         """
-        Retrieve all Doables for a case.
+        Retrieve all Doables for a case, sorted by priority and then by age.
         """
         case_doables = [doable for doable in self.doables.values() if doable.case_id == case_id]
-        return sort_object_list_by_key(case_doables, "created_at")
+        return self._sort_doables_by_priority_and_age(case_doables)
 
 
     def get_doables_grouped_by_case(self) -> Dict[str, List[Doable]]:
         """
-        Group Doables by case ID.
+        Group Doables by case ID, and sort each group by priority and then by age.
         """
         doables_by_case = {}
+
         for doable in self.doables.values():
+            if doable.case_id is None: # Skip doables with None as case_id
+                continue
+
             if doable.case_id not in doables_by_case:
                 doables_by_case[doable.case_id] = []
             doables_by_case[doable.case_id].append(doable)
         
         return doables_by_case
-    
+            
 
     def update_doable(self, doable_id: str, **kwargs):
         """

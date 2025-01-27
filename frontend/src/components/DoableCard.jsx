@@ -16,6 +16,7 @@ const DoableCard = ({
     doableTitle,
     doableType,
     status,
+    priority,
     userFirstName,
     userLastName,
     isCaseAllocation
@@ -65,6 +66,11 @@ const DoableCard = ({
                     <span>{formatDate(createdAt)}</span>
                 </div>
 
+                <div className="doable-card-row">
+                    <span className="doable-card-label">Priority:</span>
+                    <span>{priority}</span>
+                </div>
+                
                 <div className="doable-card-row">
                     <span className="doable-card-label">Status:</span>
                     <span>{status}</span>

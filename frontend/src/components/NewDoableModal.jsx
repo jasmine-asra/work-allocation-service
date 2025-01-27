@@ -4,6 +4,7 @@ import api from '../utils/api';
 const NewDoableModal = ({ isOpen, onClose }) => {
     const [doableTitle, setDoableTitle] = useState('');
     const [doableType, setDoableType] = useState('');
+    const [doablePriority, setDoablePriority] = useState('');
     const [caseId, setCaseId] = useState('');
 
     const handleSubmit = async (e) => {
@@ -13,13 +14,15 @@ const NewDoableModal = ({ isOpen, onClose }) => {
             const newDoable = {
                 doableTitle,
                 doableType,
-                ...(caseId && { caseId }) // Only include caseId if it's not empty
+                doablePriority,
+                ...(caseId && { caseId })
             };
 
             await api.post('/doables', newDoable);
             
             setDoableTitle('');
             setDoableType('');
+            setDoablePriority('');
             setCaseId('');
             
             onClose();
@@ -27,6 +30,8 @@ const NewDoableModal = ({ isOpen, onClose }) => {
             console.error('Error creating doable:', error);
         }
     };
+
+    const isSubmitDisabled = !doableTitle || !doableType || (doableType === 'task' && !caseId);
 
     if (!isOpen) return null;
 
@@ -57,6 +62,19 @@ const NewDoableModal = ({ isOpen, onClose }) => {
                         </select>
                     </div>
                     <div className="form-group">
+                        <label>Doable Priority</label>
+                        <select
+                            value={doablePriority}
+                            onChange={(e) => setDoablePriority(e.target.value)}
+                            required
+                        >
+                            <option value="">Select Priority</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div className="form-group">
                         <label>Case ID (Optional)</label>
                         <input
                             type="text"
@@ -66,7 +84,11 @@ const NewDoableModal = ({ isOpen, onClose }) => {
                     </div>
                     <div className="modal-actions">
                         <button type="button" onClick={onClose}>Cancel</button>
-                        <button type="submit">Create Doable</button>
+                        <button 
+                            type="submit" 
+                            disabled={isSubmitDisabled}
+                            className={isSubmitDisabled ? 'disabled' : ''}
+                        >Create Doable</button>
                     </div>
                 </form>
             </div>

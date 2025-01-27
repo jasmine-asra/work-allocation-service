@@ -25,18 +25,33 @@ class AllocationManager:
             print("File not found. Starting with an empty allocations list.")
 
 
-    def _create_case_allocation(self, doable, user_id):
+    def _create_allocation(self, doable, user_id, is_case_allocation=False):
         """
         Create an allocation for a doable in a case.
         """
         allocation = Allocation(
             doable_id=doable.id,
             user_id=user_id,
-            is_case_allocation=True
+            is_case_allocation=is_case_allocation
         )
         self.allocations[allocation.doable_id] = allocation 
         self.doable_manager.update_doable(doable.id, status="allocated")
         return allocation
+    
+
+    def _sort_allocations_by_priority_and_age(self, allocations: List[Dict]) -> List[Dict]:
+        """
+        Sort a list of Allocations by priority and age.
+        """
+        priority_order = {"high": 0, "medium": 1, "low": 2}
+
+        return sorted(
+            allocations,
+            key=lambda a: (
+                priority_order.get(a["priority"], float("inf")),
+                a["created_at"],
+            ),
+        )
 
 
     def get_allocation_view(self) -> List[dict]:
@@ -60,9 +75,10 @@ class AllocationManager:
                     "user_preferred_type": user.preferred_doable_type,
                     "allocated_at": allocation.allocated_at,
                     "is_case_allocation": allocation.is_case_allocation,
+                    "priority": doable.priority,
                     "status": doable.status
                 })
-        return allocation_list
+        return self._sort_allocations_by_priority_and_age(allocation_list)
     
 
     def get_allocations_by_user(self, user_id: str) -> List[Allocation]:
@@ -79,16 +95,11 @@ class AllocationManager:
         Update the status of the doable to 'allocated'.
         """
         oldest_doable = self.doable_manager.get_oldest_doable_by_type(doable_type)
-        
-        allocation = Allocation(
-            doable_id=oldest_doable.id, 
-            user_id=user_id
-        )
-        self.allocations[allocation.doable_id] = allocation
 
-        self.doable_manager.update_doable(oldest_doable.id, status="allocated")
+        if not oldest_doable:
+            return None
         
-        return allocation
+        return self._create_allocation(oldest_doable, user_id)
 
 
     def allocate_by_case(self, user_id: str, doable_type: str = None) -> List[Allocation]:
@@ -103,7 +114,7 @@ class AllocationManager:
             if not all(doable.status == "pending" for doable in doables):
                 continue
             if doable_type and any(doable.type == doable_type for doable in doables):
-                return [self._create_case_allocation(d, user_id) for d in doables]
+                return [self._create_allocation(d, user_id, is_case_allocation=True) for d in doables]
 
         # If no matching case found, get case with oldest doable
         oldest_case = min(
@@ -145,21 +156,24 @@ class AllocationManager:
             del self.allocations[doable_id]
             self.doable_manager.update_doable(doable_id, status="pending")
         else:
-            raise ValueError("Allocation does not exist.")
+            raise ValueError(f"No allocation found for doable with ID {doable_id}.")
 
 
     def delete_case_allocations(self, case_id: str):
         """
         Delete all allocations for a case.
         """
-        doables_to_delete = [
-            allocation.doable_id 
-            for allocation in self.allocations.values() 
-            if self.doable_manager.get_doable(allocation.doable_id).case_id == case_id
-        ]
-
-        for doable_id in doables_to_delete:
-            self.delete_allocation(doable_id)
+        doables_to_delete = self.doable_manager.get_doables_by_case(case_id)
+        deleted_count = 0
+        for doable in doables_to_delete:
+            if doable.id in self.allocations and doable.status == "allocated":
+                del self.allocations[doable.id]
+                self.doable_manager.update_doable(doable.id, status="pending")
+                deleted_count += 1
+            else:
+                raise ValueError(f"No allocation found for doable with ID {doable.id}.")
+        
+        return deleted_count
     
     
     def save_allocations(self):

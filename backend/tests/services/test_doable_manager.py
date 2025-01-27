@@ -18,14 +18,25 @@ def mock_doables_data():
             "title": "Test email 1",
             "case_id": "case_1",
             "type": "email",
+            "priority": "high",
             "status": "pending",
             "created_at": "2024-01-01T00:00:00",
+        },
+        {
+            "id": "message_2",
+            "title": "Test email 2",
+            "case_id": "case_1",
+            "type": "email",
+            "priority": "medium",
+            "status": "pending",
+            "created_at": "2023-12-31T00:00:00",  # Older but medium priority
         },
         {
             "id": "task_1_case_1",
             "title": "Test Task 1",
             "case_id": "case_1",
             "type": "task",
+            "priority": "low",
             "status": "pending",
             "created_at": "2024-01-02T00:00:00",
         },
@@ -34,6 +45,7 @@ def mock_doables_data():
             "title": "Test Task 2",
             "case_id": "case_1",
             "type": "task",
+            "priority": "medium",
             "status": "completed",
             "created_at": "2024-01-03T00:00:00",
         },
@@ -47,7 +59,7 @@ def test_load_from_file(setup_manager, mock_doables_data):
     with patch("builtins.open", mock_open(read_data=json.dumps(mock_doables_data))):
         setup_manager._load_from_file()
         
-    assert len(setup_manager.doables) == 3
+    assert len(setup_manager.doables) == 4
     assert setup_manager.doables["message_1"].title == "Test email 1"
     assert setup_manager.doables["task_1_case_1"].status == "pending"
 
@@ -123,6 +135,7 @@ def test_get_oldest_doable_by_type_without_specifying_type(setup_manager, mock_d
         setup_manager._load_from_file()
     
     oldest_doable = setup_manager.get_oldest_doable_by_type()
+
     assert oldest_doable.id == "message_1"
 
 
@@ -148,6 +161,79 @@ def test_get_oldest_doable_by_type_task(setup_manager, mock_doables_data):
     assert oldest_doable.id == "task_1_case_1"
 
 
+def test_get_oldest_doable_by_type_respects_priority(setup_manager, mock_doables_data):
+    """
+    Test retrieving the highest priority doable first, regardless of age.
+    """
+    with patch("builtins.open", mock_open(read_data=json.dumps(mock_doables_data))):
+        setup_manager._load_from_file()
+    
+    oldest_doable = setup_manager.get_oldest_doable_by_type()
+    
+    assert oldest_doable.id == "message_1"
+    assert oldest_doable.priority == "high"
+
+
+def test_get_oldest_doable_by_type_same_priority(setup_manager):
+    """
+    Test that when multiple doables have same priority, the oldest is returned.
+    """
+    test_data = [
+        {
+            "id": "task_1",
+            "title": "Newer Task",
+            "type": "task",
+            "priority": "high",
+            "status": "pending",
+            "created_at": "2024-01-02T00:00:00",
+        },
+        {
+            "id": "task_2",
+            "title": "Older Task",
+            "type": "task",
+            "priority": "high",
+            "status": "pending",
+            "created_at": "2024-01-01T00:00:00",
+        }
+    ]
+    
+    with patch("builtins.open", mock_open(read_data=json.dumps(test_data))):
+        setup_manager._load_from_file()
+    
+    oldest_doable = setup_manager.get_oldest_doable_by_type()
+    assert oldest_doable.id == "task_2"
+
+
+def test_get_oldest_doable_by_type_priority_fallback(setup_manager):
+    """
+    Test that when no high priority doables exist, falls back to medium, then low.
+    """
+    test_data = [
+        {
+            "id": "task_1",
+            "title": "Low Priority Old",
+            "type": "task",
+            "priority": "low",
+            "status": "pending",
+            "created_at": "2024-01-01T00:00:00",
+        },
+        {
+            "id": "task_2",
+            "title": "Medium Priority Newer",
+            "type": "task",
+            "priority": "medium",
+            "status": "pending",
+            "created_at": "2024-01-02T00:00:00",
+        }
+    ]
+    
+    with patch("builtins.open", mock_open(read_data=json.dumps(test_data))):
+        setup_manager._load_from_file()
+    
+    oldest_doable = setup_manager.get_oldest_doable_by_type()
+    assert oldest_doable.id == "task_2" 
+
+
 def test_get_doables_by_case(setup_manager, mock_doables_data):
     """
     Test getting doables by case ID.
@@ -156,10 +242,14 @@ def test_get_doables_by_case(setup_manager, mock_doables_data):
         setup_manager._load_from_file()
     
     case_doables = setup_manager.get_doables_by_case("case_1")
-    
-    assert len(case_doables) == 3
-    assert case_doables[0].id == "message_1"
-    assert case_doables[1].id == "task_1_case_1"
+
+    assert len(case_doables) == 4
+    assert [doable.id for doable in case_doables] == [
+        "message_1",  # Pending, high priority, oldest
+        "message_2",  # Pending, medium priority, oldest
+        "task_1_case_1",  # Pending, low priority
+        "task_2_case_1",  # Completed, medium priority
+    ]
 
 
 def test_get_doables_grouped_by_case(setup_manager, mock_doables_data):
@@ -173,7 +263,12 @@ def test_get_doables_grouped_by_case(setup_manager, mock_doables_data):
     
     assert len(doables_by_case) == 1
     assert "case_1" in doables_by_case
-    assert len(doables_by_case["case_1"]) == 3
+    assert [doable.id for doable in doables_by_case["case_1"]] == [
+        "message_1",  # Pending, high priority, oldest
+        "message_2",  # Pending, medium priority, oldest
+        "task_1_case_1",  # Pending, low priority
+        "task_2_case_1",  # Completed, medium priority
+    ]
 
 
 def test_update_doable(setup_manager, mock_doables_data):
