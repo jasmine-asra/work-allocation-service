@@ -113,7 +113,8 @@ I opted to create a separate **Allocation** model instead of adding a `user_id` 
    - Doables should remain in storage after being completed. The system retains all doables, even those marked as complete, to maintain historical data.
 
 6. **Case Allocation Restrictions**: 
-   - Cases with associated doables that have already been assigned to a user cannot be automatically reassigned. The system allocates the next available case with no allocated doables. This prevents a doable being reassigned after a user has already begun to complete it. This restriction would not be necessary if users could manage their own doables by, for example, marking them as `in_progress` as this would allow doables which had not been started to be reassigned.
+   - Cases with associated doables that have already been assigned to a user cannot be automatically reassigned. The system allocates the next available case with no allocated doables. This prevents a doable being reassigned after a user has already begun to complete it. 
+   - This restriction would not be necessary if users could manage their own doables by, for example, marking them as `in_progress` as this would allow doables which had not been started to be reassigned.
 
 7. **Case ID for "message_457"**: 
    - The case ID for **message_457 ("case_setup_2")** is an exception as it does not follow the same pattern as the other doables.
