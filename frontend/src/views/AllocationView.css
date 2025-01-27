@@ -1,0 +1,26 @@
+.allocation-view {
+    padding: 2rem;
+    max-width: 1350px;
+    margin: 0 auto;
+}
+
+.case-view .case-section {
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+}
+
+.case-heading {
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.allocation-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    align-items: start;
+    margin-top: 4rem;
+}
+
