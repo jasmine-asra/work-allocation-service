@@ -64,7 +64,7 @@ Once both the backend and frontend are running, you can:
    - You can **toggle the view** to show single allocations or group them by **case ID**.
    - Each allocation card shows metadata, including the user assigned to the doable, the doable’s title, date created and status.
    - A **"case" badge** will indicate if the allocation was made via case allocation.
-   - You can unallocate a **single doable** or unallocate all doables associated with the case.
+   - You can unallocate a **single doable** or unallocate all doables associated with the **case**.
    - You can **mark a doable as complete** by clicking the tick in the top right corner. Once marked complete, the doable status is updated to **"completed"** and the options to unallocate disappear.
 
 5. **Search Allocations**: 
@@ -77,18 +77,18 @@ Once both the backend and frontend are running, you can:
 ### User Model Changes
 I made the following changes to the **User** model:
 - Added `first_name` and `last_name` fields to capture the full name of users.
-- Added a `user_id` field to ensure each user can be uniquely identified.
+- Added an `id` field to ensure each user can be uniquely identified.
 
-These changes were made to ensure that each user has more detailed personal information, allowing for a more robust user management system.
+These changes were made to allow for a more robust and user-friendly management system.
 
 ### Doable Model Changes
 I added a `status` field to the **Doable** model. This field tracks the current status of a doable ("pending", "allocated", "completed"). The `status` field tracks the lifecycle of a doable and controls its allocation process.
 
 ### Allocation Model (Junction Table)
-I created an **Allocation** model to act as a junction table between **users** and **doables**. This model stores the allocation details, including the `doable_id`, `user_id`, and allocation-specific data like `allocated_at` and `is_case_allocation`.
+I created an **Allocation** model to act as a junction table between **users** and **doables**. This model stores the allocation details, including the `doable_id`, `user_id`, and the allocation-specific data `allocated_at` and `is_case_allocation`.
 
 I opted to create a separate **Allocation** model instead of adding a `user_id` field directly to the **Doable** model for the following reasons:
-- A dedicated **Allocation** model allows easy tracking of allocation type (single or case-based).
+- A dedicated model allows easy tracking of allocation type (single or case-based).
 - Adding a separate model enables better handling of future changes, such as supporting multiple users per doable.
 - Seperating the concerns helps to maintain cleaner, more maintainable code.
 
@@ -113,7 +113,7 @@ I opted to create a separate **Allocation** model instead of adding a `user_id` 
    - Doables should remain in storage after being completed. The system retains all doables, even those marked as complete, to maintain historical data.
 
 6. **Case Allocation Restrictions**: 
-   - Cases with associated doables that have already been assigned to a user cannot be automatically reassigned. The system allocates the next available case with no allocated doables. This prevents a doable being reassigned after a user has already begun to complete it.
+   - Cases with associated doables that have already been assigned to a user cannot be automatically reassigned. The system allocates the next available case with no allocated doables. This prevents a doable being reassigned after a user has already begun to complete it. This restriction would not be necessary if users could manage their own doables by, for example, marking them as `in_progress` as this would allow doables which had not been started to be reassigned.
 
 7. **Case ID for "message_457"**: 
    - The case ID for **message_457 ("case_setup_2")** is an exception as it does not follow the same pattern as the other doables.
