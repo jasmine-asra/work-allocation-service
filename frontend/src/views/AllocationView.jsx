@@ -56,59 +56,102 @@ const AllocationView = () => {
         allocation.status.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Group allocations by case
-    const groupedAllocations = filteredAllocations.reduce((acc, allocation) => {
-        const caseId = allocation.caseId || 'Uncategorized';
-        if (!acc[caseId]) {
-            acc[caseId] = [];
-        }
-        acc[caseId].push(allocation);
-        return acc;
-    }, {});
+    // Separate completed and incomplete allocations
+    const completedAllocations = filteredAllocations.filter(allocation => allocation.status === 'completed');
+    const incompleteAllocations = filteredAllocations.filter(allocation => allocation.status !== 'completed');
+
+    // Group incomplete and completed allocations by case
+    const groupByCase = (allocationsList) =>
+        allocationsList.reduce((acc, allocation) => {
+            const caseId = allocation.caseId || 'Uncategorized';
+            if (!acc[caseId]) {
+                acc[caseId] = [];
+            }
+            acc[caseId].push(allocation);
+            return acc;
+        }, {});
+
+    const incompleteGroupedAllocations = groupByCase(incompleteAllocations);
+    const completedGroupedAllocations = groupByCase(completedAllocations);
 
     const renderAllocations = () => {
         if (viewMode === 'single') {
             return (
-                <div className="allocation-grid">
-                    {filteredAllocations.map((allocation) => (
-                        <DoableCard
-                            key={allocation.doableId}
-                            allocation={allocation}
-                            onMarkComplete={() => markDoableComplete(allocation.doableId)}
-                            onToggleAllocateSingle={() => unallocateSingle(allocation.doableId)}
-                            onToggleAllocateCase={() => unallocateCase(allocation.caseId)}
-                        />
-                    ))}
-                </div>
+                <>
+                    <div className="allocation-grid">
+                        {incompleteAllocations.map(allocation => (
+                            <DoableCard
+                                key={allocation.doableId}
+                                allocation={allocation}
+                                onMarkComplete={() => markDoableComplete(allocation.doableId)}
+                                onToggleAllocateSingle={() => unallocateSingle(allocation.doableId)}
+                                onToggleAllocateCase={() => unallocateCase(allocation.caseId)}
+                            />
+                        ))}
+                    </div>
+                    {completedAllocations.length > 0 && (
+                        <div className="completed-section">
+                            <h2>Completed Allocations</h2>
+                            <div className="allocation-grid">
+                                {completedAllocations.map(allocation => (
+                                    <DoableCard
+                                        key={allocation.doableId}
+                                        allocation={allocation}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </>
             );
         }
 
         return (
-            <div className="case-view">
-                {Object.entries(groupedAllocations).map(([caseId, caseAllocations]) => (
-                    <div key={caseId} className="case-section">
-                        <h2 className="case-heading">{caseId}</h2>
-                        <div className="allocation-grid">
-                            {caseAllocations.map((allocation) => (
-                                <DoableCard
-                                    key={allocation.doableId}
-                                    allocation={allocation}
-                                    onMarkComplete={() => markDoableComplete(allocation.doableId)}
-                                    onToggleAllocateSingle={() => unallocateSingle(allocation.doableId)}
-                                    onToggleAllocateCase={() => unallocateCase(allocation.caseId)}
-                                />
-                            ))}
+            <>
+                <div className="case-view">
+                    {Object.entries(incompleteGroupedAllocations).map(([caseId, caseAllocations]) => (
+                        <div key={caseId} className="case-section">
+                            <h2 className="case-heading">{caseId}</h2>
+                            <div className="allocation-grid">
+                                {caseAllocations.map(allocation => (
+                                    <DoableCard
+                                        key={allocation.doableId}
+                                        allocation={allocation}
+                                        onMarkComplete={() => markDoableComplete(allocation.doableId)}
+                                        onToggleAllocateSingle={() => unallocateSingle(allocation.doableId)}
+                                        onToggleAllocateCase={() => unallocateCase(allocation.caseId)}
+                                    />
+                                ))}
+                            </div>
                         </div>
+                    ))}
+                </div>
+                {Object.keys(completedGroupedAllocations).length > 0 && (
+                    <div className="completed-section">
+                        <h2>Completed Cases</h2>
+                        {Object.entries(completedGroupedAllocations).map(([caseId, caseAllocations]) => (
+                            <div key={caseId} className="case-section">
+                                <h2 className="case-heading">{caseId}</h2>
+                                <div className="allocation-grid">
+                                    {caseAllocations.map(allocation => (
+                                        <DoableCard
+                                            key={allocation.doableId}
+                                            allocation={allocation}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
+                )}
+            </>
         );
     };
 
     return (
         <div className="allocation-view">
-            <select 
-                value={viewMode} 
+            <select
+                value={viewMode}
                 onChange={(e) => setViewMode(e.target.value)}
             >
                 <option value="single">Single Allocations</option>
