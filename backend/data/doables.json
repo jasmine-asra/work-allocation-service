@@ -4,6 +4,7 @@
         "title": "set up the case",
         "case_id": "case_1",
         "type": "task",
+        "priority": "high",
         "status": "pending",
         "created_at": "2021-11-01T15:00:00"
     },
@@ -12,6 +13,7 @@
         "title": "re: send us your details",
         "case_id": "case_1",
         "type": "email",
+        "priority": "medium",
         "status": "pending",
         "created_at": "2021-11-02T15:00:00"
     },
@@ -20,6 +22,7 @@
         "title": "exchange",
         "case_id": "case_2",
         "type": "task",
+        "priority": "low",
         "status": "pending",
         "created_at": "2021-11-01T10:00:00"
     },
@@ -28,6 +31,7 @@
         "title": "complete",
         "case_id": "case_2",
         "type": "task",
+        "priority": "high",
         "status": "pending",
         "created_at": "2021-11-01T11:00:00"
     },
@@ -36,6 +40,7 @@
         "title": "are we completing today?",
         "case_id": "case_setup_2",
         "type": "email",
+        "priority": "high",
         "status": "pending",
         "created_at": "2021-11-02T10:00:00"
     },
@@ -44,6 +49,7 @@
         "title": "set up the case",
         "case_id": "case_3",
         "type": "task",
+        "priority": "medium",
         "status": "pending",
         "created_at": "2021-11-15T16:24:00"
     },
@@ -52,6 +58,7 @@
         "title": "I'm interested in hiring a lawyer",
         "case_id": null,
         "type": "email",
+        "priority": "medium",
         "status": "pending",
         "created_at": "2021-11-04T15:00:00"
     },
@@ -60,6 +67,7 @@
         "title": "whats the status of my case",
         "case_id": "case_4",
         "type": "email",
+        "priority": "low",
         "status": "pending",
         "created_at": "2021-11-10T19:00:00"
     },
@@ -68,6 +76,7 @@
         "title": "set up the case",
         "case_id": "case_5",
         "type": "task",
+        "priority": "medium",
         "status": "pending",
         "created_at": "2021-10-29T07:00:00"
     },
@@ -76,6 +85,7 @@
         "title": "set up the case",
         "case_id": "case_6",
         "type": "task",
+        "priority": "high",
         "status": "pending",
         "created_at": "2021-10-29T07:00:00"
     },
@@ -84,6 +94,7 @@
         "title": "please find mortgage offer attached",
         "case_id": "case_7",
         "type": "email",
+        "priority": "medium",
         "status": "pending",
         "created_at": "2021-11-05T07:00:00"
     },
@@ -92,6 +103,7 @@
         "title": "did you get my previous message?",
         "case_id": "case_7",
         "type": "email",
+        "priority": "low",
         "status": "pending",
         "created_at": "2021-11-05T09:00:00"
     },
@@ -100,6 +112,7 @@
         "title": "Who will i pick the key up from?",
         "case_id": "case_8",
         "type": "email",
+        "priority": "medium",
         "status": "pending",
         "created_at": "2021-11-07T13:00:42"
     },
@@ -108,6 +121,7 @@
         "title": "exchange",
         "case_id": "case_8",
         "type": "task",
+        "priority": "medium",
         "status": "pending",
         "created_at": "2021-11-02T16:48:42"
     },
@@ -116,6 +130,7 @@
         "title": "complete",
         "case_id": "case_8",
         "type": "task",
+        "priority": "high",
         "status": "pending",
         "created_at": "2021-11-02T16:48:42"
     }
