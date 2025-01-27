@@ -1,6 +1,6 @@
 # Work Allocation Service
 
-This is a web application built with **Flask** (backend) and **React** (frontend) to manage **doables** and their **allocations** to users. Users can be automatically allocated the oldest doables in the system singularly or by case, and allocations can be viewed, filtered, and modified.
+This is a web application built with **Flask** (backend) and **React** (frontend) to manage **doables** and their **allocations** to users. Users can be automatically allocated doables in the system based on priority, age and type preference. Doables are allocated either singularly or by case, and allocations can be viewed, filtered, and modified.
 
 ## Table of Contents
 
@@ -52,15 +52,15 @@ Once both the backend and frontend are running, you can:
    
 2. **Users View**: 
    - From the home page, you can view all the users in the system and see which doables they have been allocated by expanding a user card. Doables that are not marked as complete will be listed.
-   - You can allocate a **single doable** to a user which assigns the oldest unallocated doable matching their preference. 
-   - You can also **allocate all doables of a case** to a user. The system will automatically assign an entire case-load of doables to a user by finding the case which has no associated doables currently allocated, and which has the oldest doable that matches the user's preference associated with it.
+   - You can allocate a **single doable** to a user which assigns the oldest, highest priority doable that matches their preference. 
+   - You can also **allocate all doables of a case** to a user. The system will automatically assign an entire case-load of doables to a user by finding the case which has no associated doables currently allocated, and which has the oldest, highest priority doable that matches the user's preference associated with it.
    - You can assign a user all **unallocated doables** associated with a doable they have already been allocated. This does not reallocate any already allocated doables to avoid confusion.
 
 3. **Filter Users**: 
    - You can filter users by **name** or **preferred type** to make it easier to find the user you want to allocate doables to.
 
 4. **Allocations View**: 
-   - Click the "Allocations" button in the header to go to the allocations view. This page shows all allocations in the order in which they were allocated.
+   - Click the "Allocations" button in the header to go to the allocations view. This page shows all allocations in the order in which they should be tackled.
    - You can **toggle the view** to show single allocations or group them by **case ID**.
    - Each allocation card shows metadata, including the user assigned to the doable, the doable’s title, date created and status.
    - A **"case" badge** will indicate if the allocation was made via case allocation.
@@ -82,7 +82,9 @@ I made the following changes to the **User** model:
 These changes were made to allow for a more robust and user-friendly management system.
 
 ### Doable Model Changes
-I added a `status` field to the **Doable** model. This field tracks the current status of a doable ("pending", "allocated", "completed"). The `status` field tracks the lifecycle of a doable and controls its allocation process.
+I made the following changes to the **Doable** model:
+- Added a `priority` field to indicate whether the doable is "high", "medium" or "low" priority.
+- Added a `status` field to track the current status of a doable ("pending", "allocated", "completed"). The `status` field tracks the lifecycle of a doable and controls its allocation process.
 
 ### Allocation Model (Junction Table)
 I created an **Allocation** model to act as a junction table between **users** and **doables**. This model stores the allocation details, including the `doable_id`, `user_id`, and the allocation-specific data `allocated_at` and `is_case_allocation`.
@@ -109,12 +111,15 @@ I opted to create a separate **Allocation** model instead of adding a `user_id` 
 4. **Task-Doables Are Always Associated with a Case**:
    - I assumed that **task-type doables** are always associated with a **case**. Therefore, these doables require a case ID to be created.
 
-5. **Doables Persist After Completion**: 
+5. **Single Doables Are Only Assigned to Matching Users**:
+   - When assigning cases, doables of any type can be assigned to users with any preference. However, the task specifies that when allocating a single doable users should be assigned the highest priority doable that they "can do", so I assumed that they *cannot do* single doables that do not match their preference.
+
+6. **Doables Persist After Completion**: 
    - Doables should remain in storage after being completed. The system retains all doables, even those marked as complete, to maintain historical data.
 
-6. **Case Allocation Restrictions**: 
+7. **Case Allocation Restrictions**: 
    - Cases with associated doables that have already been assigned to a user cannot be automatically reassigned. The system allocates the next available case with no allocated doables. This prevents a doable being reassigned after a user has already begun to complete it. 
    - This restriction would not be necessary if users could manage their own doables by, for example, marking them as `in_progress` as this would allow doables which had not been started to be reassigned.
 
-7. **Case ID for "message_457"**: 
+8. **Case ID for "message_457"**: 
    - The case ID for **message_457 ("case_setup_2")** is an exception as it does not follow the same pattern as the other doables.
